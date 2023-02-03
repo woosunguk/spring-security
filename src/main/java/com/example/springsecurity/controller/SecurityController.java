@@ -8,13 +8,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@Controller
+@RestController
 public class SecurityController {
   @GetMapping("/profile")
-  @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-  @ResponseBody
   public String profile(Principal principal, Authentication authentication, Authorization authorization) {
     log.error("pricipal : {}, {}", principal, principal.getClass().getName());
     log.error("authentication : {}, {}", authentication, authentication.getName());
@@ -24,7 +23,6 @@ public class SecurityController {
   }
 
   @GetMapping("/users")
-  @PreAuthorize("hasRole('ADMIN')")
   public String adminAccess() {
     return "Users";
   }

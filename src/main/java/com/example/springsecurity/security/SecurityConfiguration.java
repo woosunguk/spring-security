@@ -1,5 +1,6 @@
 package com.example.springsecurity.security;
 
+import com.example.springsecurity.security.filter.AuthTokenFilter;
 import com.example.springsecurity.security.filter.MyFilter;
 import com.example.springsecurity.security.filter.TestFilter;
 import com.example.springsecurity.service.UserDetailsServiceImpl;
@@ -23,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
 
   private final UserDetailsServiceImpl userDetailsService;
+  private final AuthTokenFilter authTokenFilter;
   private final TestFilter testFilter;
 
   @Bean
@@ -48,14 +50,16 @@ public class SecurityConfiguration {
         .cors()
         .and()
           .csrf().disable().authorizeHttpRequests()
+          .requestMatchers("/signin").permitAll()
           .requestMatchers("/signup").permitAll()
-          .requestMatchers("/users").hasRole("manager")
+          .requestMatchers("/users").hasRole("ADMIN")
           .anyRequest().authenticated()
         .and()
           .formLogin().defaultSuccessUrl("/profile")
     ;
 
     http.addFilterBefore(testFilter, UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class); // JWT 인증 Filter
     http.addFilterAfter(new MyFilter(), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
